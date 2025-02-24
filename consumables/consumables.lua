@@ -2,10 +2,29 @@ local timerball = {
     name = "timerball",
     key = "timerball",
     set = "Item",
-    config = {extra = {round_on_add = 1}},
+    config = {extra = {round_on_add = 1, legendary = 15, rare = 7, uncommon = 3, common = 1}},
     loc_vars = function(self, info_queue, center)
       info_queue[#info_queue+1] = {set = 'Other', key = 'timer'}
-      return {vars = {center and (center.ability.extra.round_on_add) or (self.config.extra.round_on_add),}}
+      -- don't know the localization code for rarities
+      -- it should be localize('k_common') or something like that
+      local rarities = {'Common', 'Uncommon', 'Rare', 'Legendary'}
+      local rarity = rarities[1]
+      local round = G.GAME.round - center.ability.extra.round_on_add
+      local color = G.C.BLUE
+      if round > center.ability.extra.legendary then
+        round = 999
+        rarity = rarities[4]
+      elseif round > center.ability.extra.rare then
+        round = center.ability.extra.legendary - round
+        rarity = rarities[3]
+      elseif round > center.ability.extra.uncommon then
+        round = center.ability.extra.rare - round
+        rarity = rarities[2]
+      elseif round > center.ability.extra.common then
+        round = center.ability.extra.uncommon - round
+        rarity = rarities[1]
+      end
+      return {vars = {rarity, round, colours = {color}}}
       
     end,
     pos = { x = 0, y = 0 },
