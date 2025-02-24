@@ -12,10 +12,13 @@ local timerball = {
       local round = G.GAME.round - center.ability.extra.round_on_add
       local colors = {G.C.BLUE, G.C.GREEN, G.C.RED, G.C.PURPLE}
       local color = colors[1]
+      local key
+
       if round >= center.ability.extra.legendary then
         round = 999
         rarity = rarities[4]
         color = colors[4]
+        key = self.key.."_max"      
       elseif round >= center.ability.extra.rare then
         round = center.ability.extra.legendary - round
         rarity = rarities[3]
@@ -29,7 +32,7 @@ local timerball = {
         rarity = rarities[1]
         color = colors[1]
       end
-      return {vars = {rarity, round, colours = {color}}}
+      return {vars = {rarity, round, colours = {color}}, key = key}
       
     end,
     pos = { x = 0, y = 0 },
@@ -74,6 +77,7 @@ local timerball = {
           _card:add_to_deck()
           G.jokers:emplace(_card)
           return true end }))
+
       end
     delay(0.6)
     end,
