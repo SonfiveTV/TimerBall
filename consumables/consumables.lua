@@ -11,16 +11,16 @@ local timerball = {
       local rarity = rarities[1]
       local round = G.GAME.round - center.ability.extra.round_on_add
       local color = G.C.BLUE
-      if round > center.ability.extra.legendary then
+      if round >= center.ability.extra.legendary then
         round = 999
         rarity = rarities[4]
-      elseif round > center.ability.extra.rare then
+      elseif round >= center.ability.extra.rare then
         round = center.ability.extra.legendary - round
         rarity = rarities[3]
-      elseif round > center.ability.extra.uncommon then
+      elseif round >= center.ability.extra.uncommon then
         round = center.ability.extra.rare - round
         rarity = rarities[2]
-      elseif round > center.ability.extra.common then
+      elseif round >= center.ability.extra.common then
         round = center.ability.extra.uncommon - round
         rarity = rarities[1]
       end
