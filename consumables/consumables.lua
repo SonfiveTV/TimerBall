@@ -2,10 +2,34 @@ local timerball = {
     name = "timerball",
     key = "timerball",
     set = "Item",
-    config = {extra = {round_on_add = 1}},
+    config = {extra = {round_on_add = 1, legendary = 15, rare = 7, uncommon = 3, common = 0}},
     loc_vars = function(self, info_queue, center)
       info_queue[#info_queue+1] = {set = 'Other', key = 'timer'}
-      return {vars = {center and (center.ability.extra.round_on_add) or (self.config.extra.round_on_add),}}
+      -- don't know the localization code for rarities
+      -- it should be localize('k_common') or something like that
+      local rarities = {'Common', 'Uncommon', 'Rare', 'Legendary'}
+      local rarity = rarities[1]
+      local round = G.GAME.round - center.ability.extra.round_on_add
+      local colors = {G.C.BLUE, G.C.GREEN, G.C.RED, G.C.PURPLE}
+      local color = colors[1]
+      if round >= center.ability.extra.legendary then
+        round = 999
+        rarity = rarities[4]
+        color = colors[4]
+      elseif round >= center.ability.extra.rare then
+        round = center.ability.extra.legendary - round
+        rarity = rarities[3]
+        color = colors[3]
+      elseif round >= center.ability.extra.uncommon then
+        round = center.ability.extra.rare - round
+        rarity = rarities[2]
+        color = colors[2]
+      elseif round >= center.ability.extra.common then
+        round = center.ability.extra.uncommon - round
+        rarity = rarities[1]
+        color = colors[1]
+      end
+      return {vars = {rarity, round, colours = {color}}}
       
     end,
     pos = { x = 0, y = 0 },
@@ -14,7 +38,7 @@ local timerball = {
     unlocked = true,
     discovered = true,
     can_use = function(self, card)
-      if (G.GAME.round - card.ability.extra.round_on_add) >= 3 and #G.jokers.cards < G.jokers.config.card_limit or self.area == G.jokers then
+      if #G.jokers.cards < G.jokers.config.card_limit or self.area == G.jokers then
         return true
       else
         return false
@@ -22,28 +46,28 @@ local timerball = {
     end,
     
     use = function(self, card, area, copier)
-      if 3 <= (G.GAME.round - card.ability.extra.round_on_add) and (G.GAME.round - card.ability.extra.round_on_add) < 6 then
+      if (G.GAME.round - card.ability.extra.round_on_add) < 3 then
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
           play_sound('timpani')
           local _card = create_random_poke_joker("timerball", nil, "common", nil, nil)
           _card:add_to_deck()
           G.jokers:emplace(_card)
           return true end }))
-      elseif 6 <= (G.GAME.round - card.ability.extra.round_on_add) and (G.GAME.round - card.ability.extra.round_on_add) < 12 then
+      elseif 3 <= (G.GAME.round - card.ability.extra.round_on_add) and (G.GAME.round - card.ability.extra.round_on_add) < 7 then
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
           play_sound('timpani')
           local _card = create_random_poke_joker("timerball", nil, "uncommon", nil, nil)
           _card:add_to_deck()
           G.jokers:emplace(_card)
           return true end }))
-      elseif 12 <= (G.GAME.round - card.ability.extra.round_on_add) and (G.GAME.round - card.ability.extra.round_on_add) < 24 then
+      elseif 7 <= (G.GAME.round - card.ability.extra.round_on_add) and (G.GAME.round - card.ability.extra.round_on_add) < 15 then
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
           play_sound('timpani')
           local _card = create_random_poke_joker("timerball", nil, "rare", nil, nil)
           _card:add_to_deck()
           G.jokers:emplace(_card)
           return true end }))
-      elseif 24 <= (G.GAME.round - card.ability.extra.round_on_add)  then
+      elseif 15 <= (G.GAME.round - card.ability.extra.round_on_add)  then
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
           play_sound('timpani')
           local _card = create_random_poke_joker("timerball", "Legendary")
